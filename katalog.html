@@ -26,7 +26,6 @@
       overflow-x: hidden;
     }
 
-    /* Background noise texture */
     body::before {
       content: '';
       position: fixed;
@@ -37,7 +36,6 @@
       opacity: 0.4;
     }
 
-    /* HEADER */
     header {
       position: sticky;
       top: 0;
@@ -92,7 +90,6 @@
       letter-spacing: 1px;
     }
 
-    /* MAIN */
     main {
       max-width: 1280px;
       margin: 0 auto;
@@ -101,7 +98,6 @@
       z-index: 1;
     }
 
-    /* FILTER */
     .filter-wrap {
       display: flex;
       gap: 10px;
@@ -123,10 +119,7 @@
       border: 1px solid var(--card-border);
     }
 
-    .filter-btn:hover {
-      color: var(--text);
-      border-color: rgba(255,255,255,0.2);
-    }
+    .filter-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
 
     .filter-btn.active {
       background: linear-gradient(135deg, var(--cyan), var(--pink));
@@ -135,18 +128,16 @@
       box-shadow: 0 0 24px rgba(0,212,255,0.35);
     }
 
-    /* GRID */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 20px;
     }
 
-    /* CARD */
     .card {
       border-radius: 20px;
       padding: 28px;
-      height: 270px;
+      height: 290px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -156,6 +147,7 @@
       background: linear-gradient(135deg, rgba(0,212,255,0.07), rgba(255,0,110,0.07));
       border: 1px solid var(--card-border);
       transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      animation: fadeUp 0.4s ease both;
     }
 
     .card:hover {
@@ -164,15 +156,19 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(0,212,255,0.1);
     }
 
-    .card-emoji {
-      font-size: 3.5rem;
+    .card-media {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: transform 0.3s ease;
-      display: inline-block;
     }
 
-    .card:hover .card-emoji {
-      transform: scale(1.2) rotate(-5deg);
-    }
+    .card:hover .card-media { transform: scale(1.15) rotate(-5deg); }
+
+    .card-media-emoji { font-size: 3.2rem; line-height: 1; }
+    .card-media-img { width: 60px; height: 60px; object-fit: cover; border-radius: 12px; border: 1px solid var(--card-border); }
 
     .card-name {
       font-family: 'Syne', sans-serif;
@@ -187,28 +183,11 @@
       overflow: hidden;
     }
 
-    .card-rating {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
+    .card-rating { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
     .card-rating span { color: #facc15; }
+    .card-price { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--cyan); }
+    .card-cicilan { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
 
-    .card-price {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 1.2rem;
-      color: var(--cyan);
-    }
-
-    .card-cicilan {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    /* Card hover overlay */
     .card-overlay {
       position: absolute;
       inset: 0;
@@ -253,10 +232,7 @@
       transition: opacity 0.3s ease;
     }
 
-    .modal-backdrop.open {
-      opacity: 1;
-      pointer-events: all;
-    }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
 
     .modal {
       background: var(--bg2);
@@ -271,13 +247,8 @@
       transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .modal-backdrop.open .modal {
-      transform: translateY(0) scale(1);
-    }
-
-    /* Custom scrollbar for modal */
+    .modal-backdrop.open .modal { transform: translateY(0) scale(1); }
     .modal::-webkit-scrollbar { width: 4px; }
-    .modal::-webkit-scrollbar-track { background: transparent; }
     .modal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
 
     .modal-body { padding: 40px; }
@@ -286,7 +257,6 @@
       position: sticky;
       top: 16px;
       left: 100%;
-      margin-right: 16px;
       width: 36px;
       height: 36px;
       background: rgba(255,255,255,0.08);
@@ -299,31 +269,17 @@
       align-items: center;
       justify-content: center;
       transition: background 0.2s;
-      flex-shrink: 0;
-      z-index: 10;
       float: right;
-      margin-top: 16px;
+      margin: 16px 16px 0 0;
     }
 
     .modal-close:hover { background: rgba(255,255,255,0.15); }
 
-    .modal-emoji {
-      font-size: 5rem;
-      text-align: center;
-      display: block;
-      margin-bottom: 24px;
-      margin-top: 8px;
-    }
+    .modal-img-wrap { text-align: center; margin-bottom: 24px; margin-top: 8px; }
+    .modal-img-emoji { font-size: 5rem; }
+    .modal-img-url { width: 120px; height: 120px; object-fit: cover; border-radius: 20px; border: 2px solid var(--card-border); }
 
-    .modal-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 900;
-      font-size: 1.8rem;
-      color: #fff;
-      margin-bottom: 10px;
-      line-height: 1.2;
-    }
-
+    .modal-title { font-family: 'Syne', sans-serif; font-weight: 900; font-size: 1.8rem; color: #fff; margin-bottom: 10px; line-height: 1.2; }
     .modal-stars { color: #facc15; font-size: 1.1rem; }
     .modal-rating-text { color: var(--muted); font-size: 0.85rem; margin-left: 8px; }
 
@@ -336,7 +292,6 @@
     }
 
     .modal-price-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-
     .modal-price-value {
       font-family: 'Syne', sans-serif;
       font-weight: 900;
@@ -347,13 +302,7 @@
       background-clip: text;
     }
 
-    .cicilan-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 14px;
-      font-size: 1rem;
-    }
+    .cicilan-title { font-family: 'Syne', sans-serif; font-weight: 700; color: #fff; margin-bottom: 14px; font-size: 1rem; }
 
     .cicilan-btn {
       width: 100%;
@@ -369,24 +318,10 @@
       font-family: 'DM Sans', sans-serif;
     }
 
-    .cicilan-btn:hover {
-      border-color: var(--cyan);
-      background: rgba(0,212,255,0.08);
-    }
+    .cicilan-btn:hover { border-color: var(--cyan); background: rgba(0,212,255,0.08); }
 
-    .cicilan-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-
-    .cicilan-months {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      color: #fff;
-      font-size: 1rem;
-    }
-
+    .cicilan-row { display: flex; justify-content: space-between; align-items: baseline; }
+    .cicilan-months { font-family: 'Syne', sans-serif; font-weight: 700; color: #fff; font-size: 1rem; }
     .cicilan-per-bulan { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
     .cicilan-amount { font-weight: 700; color: var(--cyan); font-size: 1rem; }
     .cicilan-total-row { display: flex; justify-content: space-between; margin-top: 6px; }
@@ -395,7 +330,6 @@
     .cicilan-bunga { font-size: 0.72rem; color: #fb923c; margin-top: 4px; text-align: right; }
     .cicilan-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 8px 0; }
 
-    /* Features */
     .features {
       background: rgba(255,255,255,0.03);
       border: 1px solid var(--card-border);
@@ -404,19 +338,10 @@
       margin: 20px 0;
     }
 
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 0;
-      font-size: 0.88rem;
-      color: rgba(255,255,255,0.75);
-    }
-
+    .feature-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.88rem; color: rgba(255,255,255,0.75); }
     .feature-item:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.05); }
     .check { color: #4ade80; font-size: 1rem; }
 
-    /* WA Button */
     .wa-btn {
       width: 100%;
       padding: 16px;
@@ -436,21 +361,8 @@
       box-shadow: 0 4px 20px rgba(34,197,94,0.3);
     }
 
-    .wa-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(34,197,94,0.45);
-    }
+    .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(34,197,94,0.45); }
 
-    /* Empty state */
-    .empty {
-      text-align: center;
-      padding: 80px 20px;
-      color: var(--muted);
-    }
-
-    .empty-icon { font-size: 3rem; margin-bottom: 16px; }
-
-    /* Responsive */
     @media (max-width: 600px) {
       .header-inner { padding: 16px 20px; }
       main { padding: 32px 20px; }
@@ -460,40 +372,26 @@
       .modal-price-value { font-size: 1.6rem; }
     }
 
-    /* Animate cards in */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .card {
-      animation: fadeUp 0.4s ease both;
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-inner">
     <div>
       <div class="logo">KATALOG<span>.</span></div>
       <div class="logo-sub">Produk Pilihan Terbaik</div>
     </div>
-    <div class="badge">✦ 17 Produk</div>
+    <div class="badge" id="prodBadge">✦ Memuat...</div>
   </div>
 </header>
 
-<!-- MAIN -->
 <main>
-  <!-- FILTER -->
   <div class="filter-wrap" id="filterWrap"></div>
-
-  <!-- GRID -->
   <div class="grid" id="productGrid"></div>
 </main>
 
-<!-- MODAL -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal" id="modal">
     <button class="modal-close" id="modalClose">✕</button>
@@ -502,8 +400,8 @@
 </div>
 
 <script>
-  // ─── DATA ───────────────────────────────────────────────────────────────────
-  const products = [
+  // ─── DATA (baca dari localStorage, fallback ke default) ─────
+  const DEFAULT_PRODUCTS = [
     { id:1, name:'Smartphone Flagship Pro', price:8500000, category:'handphone', image:'📱', rating:4.9, reviews:567, cicilan:[{bulan:3,cicilan:2850000},{bulan:6,cicilan:1480000},{bulan:12,cicilan:830000}] },
     { id:2, name:'Smartphone Mid Range', price:4500000, category:'handphone', image:'📱', rating:4.6, reviews:312, cicilan:[{bulan:3,cicilan:1500000},{bulan:6,cicilan:780000},{bulan:12,cicilan:440000}] },
     { id:3, name:'Smartphone Budget Terjangkau', price:2200000, category:'handphone', image:'📱', rating:4.4, reviews:198, cicilan:[{bulan:3,cicilan:740000},{bulan:6,cicilan:380000},{bulan:12,cicilan:210000}] },
@@ -523,96 +421,97 @@
     { id:17, name:'Rak Display Modern', price:1600000, category:'furniture', image:'📚', rating:4.5, reviews:123, cicilan:[{bulan:3,cicilan:540000},{bulan:6,cicilan:280000},{bulan:12,cicilan:160000}] },
   ];
 
-  const categories = [
-    { key: 'all', label: '🛍️ Semua' },
-    { key: 'handphone', label: '📱 Handphone' },
-    { key: 'laptop', label: '💻 Laptop' },
-    { key: 'elektronik', label: '🎧 Elektronik' },
-    { key: 'kamera', label: '📷 Kamera' },
-    { key: 'furniture', label: '🪑 Furniture' },
-  ];
-
-  // ─── HELPERS ────────────────────────────────────────────────────────────────
-  const fmt = (n) => new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', minimumFractionDigits:0 }).format(n);
-  const stars = (r) => '★'.repeat(Math.floor(r)) + '☆'.repeat(5 - Math.floor(r));
-
-  // ─── STATE ──────────────────────────────────────────────────────────────────
-  let activeCategory = 'all';
-
-  // ─── RENDER FILTERS ─────────────────────────────────────────────────────────
-  function renderFilters() {
-    const wrap = document.getElementById('filterWrap');
-    wrap.innerHTML = categories.map(c => `
-      <button class="filter-btn ${c.key === activeCategory ? 'active' : ''}" data-key="${c.key}">${c.label}</button>
-    `).join('');
-
-    wrap.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        activeCategory = btn.dataset.key;
-        renderFilters();
-        renderGrid();
-      });
-    });
+  function getProducts() {
+    try {
+      const d = localStorage.getItem('katalog_products');
+      return d ? JSON.parse(d) : DEFAULT_PRODUCTS;
+    } catch { return DEFAULT_PRODUCTS; }
   }
 
-  // ─── RENDER GRID ────────────────────────────────────────────────────────────
-  function renderGrid() {
-    const grid = document.getElementById('productGrid');
-    const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
+  const categories = [
+    { key:'all', label:'🛍️ Semua' },
+    { key:'handphone', label:'📱 Handphone' },
+    { key:'laptop', label:'💻 Laptop' },
+    { key:'elektronik', label:'🎧 Elektronik' },
+    { key:'kamera', label:'📷 Kamera' },
+    { key:'furniture', label:'🪑 Furniture' },
+  ];
 
+  const fmt = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n);
+  const stars = r => '★'.repeat(Math.floor(r)) + '☆'.repeat(5-Math.floor(r));
+  const isUrl = s => s && (s.startsWith('http')||s.startsWith('//'));
+
+  let activeCategory = 'all';
+
+  function mediaEl(image, size='card') {
+    if (isUrl(image)) {
+      const cls = size==='card' ? 'card-media-img' : 'modal-img-url';
+      return `<img class="${cls}" src="${image}" alt="produk" onerror="this.style.display='none'"/>`;
+    }
+    const cls = size==='card' ? 'card-media-emoji' : 'modal-img-emoji';
+    return `<span class="${cls}">${image||'📦'}</span>`;
+  }
+
+  function renderFilters() {
+    const products = getProducts();
+    const wrap = document.getElementById('filterWrap');
+    wrap.innerHTML = categories.map(c => `
+      <button class="filter-btn ${c.key===activeCategory?'active':''}" data-key="${c.key}">${c.label}</button>
+    `).join('');
+    wrap.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => { activeCategory = btn.dataset.key; renderFilters(); renderGrid(); });
+    });
+    document.getElementById('prodBadge').textContent = `✦ ${products.length} Produk`;
+  }
+
+  function renderGrid() {
+    const products = getProducts();
+    const filtered = activeCategory==='all' ? products : products.filter(p=>p.category===activeCategory);
+    const grid = document.getElementById('productGrid');
     if (!filtered.length) {
-      grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p>Tidak ada produk ditemukan</p></div>`;
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:80px;color:var(--muted)">😔 Tidak ada produk di kategori ini</div>`;
       return;
     }
-
-    grid.innerHTML = filtered.map((p, i) => `
-      <div class="card" style="animation-delay:${i * 0.06}s" data-id="${p.id}">
-        <div class="card-emoji">${p.image}</div>
+    grid.innerHTML = filtered.map((p,i) => `
+      <div class="card" style="animation-delay:${i*0.06}s" data-id="${p.id}">
+        <div class="card-media">${mediaEl(p.image,'card')}</div>
         <div>
           <div class="card-name">${p.name}</div>
           <div class="card-rating"><span>★</span> ${p.rating} (${p.reviews} ulasan)</div>
           <div class="card-price">${fmt(p.price)}</div>
-          <div class="card-cicilan">Cicilan mulai ${fmt(p.cicilan[0].cicilan)}/bln</div>
+          ${p.cicilan&&p.cicilan.length ? `<div class="card-cicilan">Cicilan mulai ${fmt(p.cicilan[0].cicilan)}/bln</div>` : ''}
         </div>
-        <div class="card-overlay">
-          <button class="card-overlay-btn">Lihat Detail →</button>
-        </div>
+        <div class="card-overlay"><button class="card-overlay-btn">Lihat Detail →</button></div>
       </div>
     `).join('');
-
     grid.querySelectorAll('.card').forEach(card => {
       card.addEventListener('click', () => openModal(Number(card.dataset.id)));
     });
   }
 
-  // ─── MODAL ──────────────────────────────────────────────────────────────────
   function openModal(id) {
-    const p = products.find(x => x.id === id);
+    const p = getProducts().find(x=>x.id===id);
     if (!p) return;
 
-    const bunga = p.cicilan.map(c => {
+    const cicilanHtml = (p.cicilan||[]).map(c => {
       const total = c.cicilan * c.bulan;
       const selisih = total - p.price;
       return `
         <button class="cicilan-btn">
-          <div class="cicilan-row">
-            <span class="cicilan-months">${c.bulan} Bulan</span>
-          </div>
-          <div class="cicilan-per-bulan">
-            Cicilan per bulan: <span class="cicilan-amount">${fmt(c.cicilan)}</span>
-          </div>
+          <div class="cicilan-row"><span class="cicilan-months">${c.bulan} Bulan</span></div>
+          <div class="cicilan-per-bulan">Cicilan per bulan: <span class="cicilan-amount">${fmt(c.cicilan)}</span></div>
           <hr class="cicilan-divider"/>
           <div class="cicilan-total-row">
             <span class="cicilan-total-label">Total pembayaran:</span>
             <span class="cicilan-total-val">${fmt(total)}</span>
           </div>
-          ${selisih > 0 ? `<div class="cicilan-bunga">Bunga: +${fmt(selisih)}</div>` : ''}
+          ${selisih>0 ? `<div class="cicilan-bunga">Bunga: +${fmt(selisih)}</div>` : ''}
         </button>
       `;
     }).join('');
 
     document.getElementById('modalBody').innerHTML = `
-      <span class="modal-emoji">${p.image}</span>
+      <div class="modal-img-wrap">${mediaEl(p.image,'modal')}</div>
       <div class="modal-title">${p.name}</div>
       <div style="display:flex;align-items:center;margin-bottom:4px">
         <span class="modal-stars">${stars(p.rating)}</span>
@@ -622,20 +521,17 @@
         <div class="modal-price-label">Harga Tunai</div>
         <div class="modal-price-value">${fmt(p.price)}</div>
       </div>
-      <div class="cicilan-title">Pilihan Cicilan</div>
-      ${bunga}
+      ${cicilanHtml ? `<div class="cicilan-title">Pilihan Cicilan</div>${cicilanHtml}` : ''}
       <div class="features">
         <div class="feature-item"><span class="check">✓</span> Garansi Resmi</div>
         <div class="feature-item"><span class="check">✓</span> Gratis Ongkos Kirim</div>
         <div class="feature-item"><span class="check">✓</span> Bisa Dikembalikan 30 Hari</div>
       </div>
-      <button class="wa-btn" id="waBtn">
-        <span style="font-size:1.3rem">💬</span> Hubungi via WhatsApp
-      </button>
+      <button class="wa-btn" id="waBtn"><span style="font-size:1.3rem">💬</span> Hubungi via WhatsApp</button>
     `;
 
     document.getElementById('waBtn').addEventListener('click', () => {
-      const msg = `Halo, saya tertarik dengan ${p.name}\n\nHarga: ${fmt(p.price)}\n\nOpsi cicilan:\n${p.cicilan.map(c => `- ${c.bulan} bulan: ${fmt(c.cicilan)}/bulan`).join('\n')}\n\nMohon informasi lebih lanjut.`;
+      const msg = `Halo, saya tertarik dengan ${p.name}\n\nHarga: ${fmt(p.price)}\n\nOpsi cicilan:\n${(p.cicilan||[]).map(c=>`- ${c.bulan} bulan: ${fmt(c.cicilan)}/bulan`).join('\n')}\n\nMohon informasi lebih lanjut.`;
       window.open(`https://wa.me/62?text=${encodeURIComponent(msg)}`, '_blank');
     });
 
@@ -649,12 +545,11 @@
   }
 
   document.getElementById('modalClose').addEventListener('click', closeModal);
-  document.getElementById('modalBackdrop').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('modalBackdrop')) closeModal();
+  document.getElementById('modalBackdrop').addEventListener('click', e => {
+    if (e.target===document.getElementById('modalBackdrop')) closeModal();
   });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 
-  // ─── INIT ───────────────────────────────────────────────────────────────────
   renderFilters();
   renderGrid();
 </script>

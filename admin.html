@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — Katalog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0e0e16;
+      --surface: #16161f;
+      --surface2: #1e1e2a;
+      --border: rgba(255,255,255,0.07);
+      --cyan: #00d4ff;
+      --pink: #ff006e;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e2e2f0;
+      --muted: #5a5a7a;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+
+    /* ── LOGIN ── */
+    #loginScreen {
+      position:fixed; inset:0; background:var(--bg);
+      display:flex; align-items:center; justify-content:center; z-index:999;
+      flex-direction:column; gap:32px;
+    }
+    .login-box {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:48px 40px;
+      width:100%; max-width:400px;
+      text-align:center;
+    }
+    .login-logo { font-family:'Syne',sans-serif; font-size:2rem; font-weight:900; color:#fff; margin-bottom:8px; }
+    .login-logo span { background:linear-gradient(135deg,var(--cyan),var(--pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .login-sub { color:var(--muted); font-size:0.85rem; margin-bottom:32px; }
+    .login-input {
+      width:100%; padding:14px 18px;
+      background:var(--surface2); border:1px solid var(--border);
+      border-radius:12px; color:#fff; font-family:'DM Sans',sans-serif; font-size:1rem;
+      margin-bottom:16px; outline:none; transition:border-color 0.2s;
+    }
+    .login-input:focus { border-color:var(--cyan); }
+    .login-btn {
+      width:100%; padding:14px;
+      background:linear-gradient(135deg,var(--cyan),var(--pink));
+      border:none; border-radius:12px; color:#fff;
+      font-family:'Syne',sans-serif; font-weight:700; font-size:1rem;
+      cursor:pointer; transition:opacity 0.2s;
+    }
+    .login-btn:hover { opacity:0.9; }
+    .login-err { color:var(--red); font-size:0.82rem; margin-top:10px; min-height:20px; }
+
+    /* ── LAYOUT ── */
+    #app { display:none; }
+    .topbar {
+      position:sticky; top:0; z-index:50;
+      background:rgba(14,14,22,0.9); backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
+      padding:16px 32px; display:flex; align-items:center; justify-content:space-between;
+    }
+    .topbar-logo { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:900; color:#fff; }
+    .topbar-logo span { background:linear-gradient(135deg,var(--cyan),var(--pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .topbar-right { display:flex; gap:10px; align-items:center; }
+    .btn { padding:9px 18px; border-radius:10px; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:600; font-size:0.83rem; transition:all 0.2s; display:flex; align-items:center; gap:6px; }
+    .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+    .btn-outline:hover { border-color:rgba(255,255,255,0.2); background:var(--surface2); }
+    .btn-primary { background:linear-gradient(135deg,var(--cyan),var(--pink)); color:#fff; }
+    .btn-primary:hover { opacity:0.9; transform:translateY(-1px); }
+    .btn-danger { background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:var(--red); }
+    .btn-danger:hover { background:rgba(239,68,68,0.25); }
+    .btn-success { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:var(--green); }
+    .btn-success:hover { background:rgba(34,197,94,0.25); }
+
+    .main { max-width:1200px; margin:0 auto; padding:32px; }
+
+    /* ── STATS ── */
+    .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:32px; }
+    .stat-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:16px; padding:20px 24px;
+    }
+    .stat-label { font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+    .stat-val { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; }
+    .stat-val.cyan { color:var(--cyan); }
+    .stat-val.pink { color:var(--pink); }
+    .stat-val.green { color:var(--green); }
+    .stat-val.yellow { color:var(--yellow); }
+
+    /* ── TOOLBAR ── */
+    .toolbar { display:flex; gap:12px; align-items:center; margin-bottom:24px; flex-wrap:wrap; }
+    .search-wrap { position:relative; flex:1; min-width:200px; }
+    .search-wrap input {
+      width:100%; padding:10px 16px 10px 40px;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:10px; color:#fff; font-family:'DM Sans',sans-serif; font-size:0.9rem;
+      outline:none; transition:border-color 0.2s;
+    }
+    .search-wrap input:focus { border-color:var(--cyan); }
+    .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:1rem; }
+    .filter-select {
+      padding:10px 14px; background:var(--surface); border:1px solid var(--border);
+      border-radius:10px; color:#fff; font-family:'DM Sans',sans-serif; font-size:0.85rem;
+      outline:none; cursor:pointer;
+    }
+
+    /* ── TABLE ── */
+    .table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+    table { width:100%; border-collapse:collapse; }
+    thead tr { border-bottom:1px solid var(--border); }
+    th { padding:14px 20px; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); font-weight:600; text-align:left; }
+    tbody tr { border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.15s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:var(--surface2); }
+    td { padding:14px 20px; font-size:0.88rem; vertical-align:middle; }
+    .prod-img { font-size:2rem; }
+    .prod-img img { width:44px; height:44px; object-fit:cover; border-radius:10px; border:1px solid var(--border); }
+    .prod-name { font-weight:600; color:#fff; max-width:180px; }
+    .prod-price { font-family:'Syne',sans-serif; font-weight:700; color:var(--cyan); }
+    .cat-badge {
+      display:inline-block; padding:4px 12px; border-radius:100px;
+      font-size:0.72rem; font-weight:600; text-transform:capitalize;
+    }
+    .cat-handphone { background:rgba(0,212,255,0.15); color:var(--cyan); }
+    .cat-laptop { background:rgba(255,0,110,0.15); color:var(--pink); }
+    .cat-elektronik { background:rgba(245,158,11,0.15); color:var(--yellow); }
+    .cat-kamera { background:rgba(34,197,94,0.15); color:var(--green); }
+    .cat-furniture { background:rgba(139,92,246,0.15); color:#a78bfa; }
+    .actions { display:flex; gap:8px; }
+    .act-btn { padding:6px 14px; border-radius:8px; border:none; cursor:pointer; font-size:0.78rem; font-weight:600; transition:all 0.15s; }
+    .act-edit { background:rgba(0,212,255,0.12); color:var(--cyan); border:1px solid rgba(0,212,255,0.2); }
+    .act-edit:hover { background:rgba(0,212,255,0.22); }
+    .act-del { background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
+    .act-del:hover { background:rgba(239,68,68,0.22); }
+    .empty-row td { text-align:center; padding:60px; color:var(--muted); }
+
+    /* ── MODAL ── */
+    .modal-bg {
+      position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+      z-index:200; display:flex; align-items:center; justify-content:center; padding:16px;
+      opacity:0; pointer-events:none; transition:opacity 0.3s;
+    }
+    .modal-bg.open { opacity:1; pointer-events:all; }
+    .modal-box {
+      background:var(--surface); border:1px solid var(--border); border-radius:24px;
+      width:100%; max-width:580px; max-height:90vh; overflow-y:auto;
+      transform:translateY(24px) scale(0.97);
+      transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .modal-bg.open .modal-box { transform:translateY(0) scale(1); }
+    .modal-box::-webkit-scrollbar { width:4px; }
+    .modal-box::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .modal-head {
+      padding:24px 28px 0;
+      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; background:var(--surface); padding-bottom:16px;
+      border-bottom:1px solid var(--border); margin-bottom:0;
+    }
+    .modal-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; color:#fff; }
+    .modal-close-btn {
+      width:32px; height:32px; border-radius:50%; background:var(--surface2);
+      border:1px solid var(--border); color:#fff; cursor:pointer; font-size:1rem;
+      display:flex; align-items:center; justify-content:center; transition:background 0.2s;
+    }
+    .modal-close-btn:hover { background:rgba(255,255,255,0.1); }
+    .modal-body { padding:24px 28px 28px; }
+
+    /* ── FORM ── */
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-full { grid-column:1/-1; }
+    .form-group { display:flex; flex-direction:column; gap:6px; }
+    label { font-size:0.78rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; }
+    .form-control {
+      padding:11px 14px; background:var(--surface2);
+      border:1px solid var(--border); border-radius:10px;
+      color:#fff; font-family:'DM Sans',sans-serif; font-size:0.9rem;
+      outline:none; transition:border-color 0.2s; width:100%;
+    }
+    .form-control:focus { border-color:var(--cyan); }
+    select.form-control option { background:var(--surface2); }
+    .img-preview {
+      margin-top:8px; width:80px; height:80px; object-fit:cover;
+      border-radius:12px; border:1px solid var(--border); display:none;
+    }
+    .img-preview.show { display:block; }
+    .img-emoji-preview { font-size:3rem; margin-top:8px; min-height:48px; }
+    .cicilan-section { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:16px; }
+    .cicilan-row { display:grid; grid-template-columns:auto 1fr 1fr; gap:12px; align-items:center; margin-bottom:10px; }
+    .cicilan-row:last-child { margin-bottom:0; }
+    .cicilan-label { font-size:0.8rem; color:var(--muted); white-space:nowrap; }
+    .hint { font-size:0.75rem; color:var(--muted); margin-top:4px; }
+    .form-actions { display:flex; gap:12px; margin-top:24px; justify-content:flex-end; }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed; bottom:24px; right:24px; z-index:999;
+      padding:14px 20px; border-radius:12px; font-weight:600; font-size:0.88rem;
+      transform:translateY(80px); opacity:0; transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      display:flex; align-items:center; gap:8px;
+    }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { background:#166534; border:1px solid var(--green); color:var(--green); }
+    .toast.error { background:#7f1d1d; border:1px solid var(--red); color:var(--red); }
+
+    /* ── CONFIRM ── */
+    .confirm-bg {
+      position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+      z-index:300; display:flex; align-items:center; justify-content:center; padding:16px;
+      opacity:0; pointer-events:none; transition:opacity 0.2s;
+    }
+    .confirm-bg.open { opacity:1; pointer-events:all; }
+    .confirm-box {
+      background:var(--surface); border:1px solid rgba(239,68,68,0.3);
+      border-radius:20px; padding:32px; max-width:380px; width:100%; text-align:center;
+    }
+    .confirm-icon { font-size:2.5rem; margin-bottom:16px; }
+    .confirm-title { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:#fff; margin-bottom:8px; }
+    .confirm-text { color:var(--muted); font-size:0.88rem; margin-bottom:24px; }
+    .confirm-actions { display:flex; gap:12px; justify-content:center; }
+
+    @media(max-width:600px) {
+      .topbar { padding:14px 16px; }
+      .main { padding:20px 16px; }
+      .form-grid { grid-template-columns:1fr; }
+      th:nth-child(3), td:nth-child(3),
+      th:nth-child(4), td:nth-child(4) { display:none; }
+    }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    tbody tr { animation:fadeUp 0.3s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">KATALOG<span>.</span></div>
+    <div class="login-sub">🔐 Admin Panel</div>
+    <input class="login-input" type="text" id="loginUser" placeholder="Username" autocomplete="off"/>
+    <input class="login-input" type="password" id="loginPass" placeholder="Password"/>
+    <button class="login-btn" onclick="doLogin()">Masuk</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+  <div style="color:var(--muted);font-size:0.78rem">Default: admin / admin123</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-logo">KATALOG<span>.</span> <span style="font-size:0.75rem;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400">Admin Panel</span></div>
+    </div>
+    <div class="topbar-right">
+      <a href="katalog.html" target="_blank"><button class="btn btn-outline">🌐 Lihat Website</button></a>
+      <button class="btn btn-success" onclick="exportData()">⬇️ Export</button>
+      <label class="btn btn-outline" style="cursor:pointer">⬆️ Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"/></label>
+      <button class="btn btn-danger" onclick="doLogout()">Keluar</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- STATS -->
+    <div class="stats" id="stats"></div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Cari produk..." oninput="renderTable()"/>
+      </div>
+      <select class="filter-select" id="catFilter" onchange="renderTable()">
+        <option value="all">Semua Kategori</option>
+        <option value="handphone">Handphone</option>
+        <option value="laptop">Laptop</option>
+        <option value="elektronik">Elektronik</option>
+        <option value="kamera">Kamera</option>
+        <option value="furniture">Furniture</option>
+      </select>
+      <button class="btn btn-primary" onclick="openModal()">＋ Tambah Produk</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Produk</th>
+            <th>Nama</th>
+            <th>Harga</th>
+            <th>Kategori</th>
+            <th>Rating</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- FORM MODAL -->
+<div class="modal-bg" id="formModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Tambah Produk</div>
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="prodForm" onsubmit="saveProduct(event)">
+        <input type="hidden" id="editId"/>
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label>Nama Produk</label>
+            <input class="form-control" id="fName" placeholder="contoh: iPhone 15 Pro Max" required/>
+          </div>
+          <div class="form-group">
+            <label>Harga (Rp)</label>
+            <input class="form-control" id="fPrice" type="number" placeholder="15000000" required/>
+          </div>
+          <div class="form-group">
+            <label>Kategori</label>
+            <select class="form-control" id="fCategory" required>
+              <option value="">— Pilih —</option>
+              <option value="handphone">📱 Handphone</option>
+              <option value="laptop">💻 Laptop</option>
+              <option value="elektronik">🎧 Elektronik</option>
+              <option value="kamera">📷 Kamera</option>
+              <option value="furniture">🪑 Furniture</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Rating (1–5)</label>
+            <input class="form-control" id="fRating" type="number" step="0.1" min="1" max="5" placeholder="4.8" required/>
+          </div>
+          <div class="form-group">
+            <label>Jumlah Ulasan</label>
+            <input class="form-control" id="fReviews" type="number" placeholder="250" required/>
+          </div>
+          <div class="form-group form-full">
+            <label>Gambar</label>
+            <input class="form-control" id="fImage" placeholder="Emoji: 📱 atau URL foto: https://..." oninput="previewImg()"/>
+            <div class="hint">Gunakan emoji (📱💻🎧) ATAU tempel link URL foto</div>
+            <div id="imgPreviewEmoji" class="img-emoji-preview"></div>
+            <img id="imgPreviewUrl" class="img-preview" alt="preview"/>
+          </div>
+
+          <div class="form-group form-full">
+            <label>Pilihan Cicilan</label>
+            <div class="cicilan-section">
+              <div class="cicilan-row">
+                <span class="cicilan-label">3 Bulan</span>
+                <input class="form-control" id="c3" type="number" placeholder="Cicilan/bulan"/>
+                <input class="form-control" style="background:var(--bg);cursor:not-allowed" readonly placeholder="Total otomatis" id="c3t"/>
+              </div>
+              <div class="cicilan-row">
+                <span class="cicilan-label">6 Bulan</span>
+                <input class="form-control" id="c6" type="number" placeholder="Cicilan/bulan"/>
+                <input class="form-control" style="background:var(--bg);cursor:not-allowed" readonly placeholder="Total otomatis" id="c6t"/>
+              </div>
+              <div class="cicilan-row">
+                <span class="cicilan-label">12 Bulan</span>
+                <input class="form-control" id="c12" type="number" placeholder="Cicilan/bulan"/>
+                <input class="form-control" style="background:var(--bg);cursor:not-allowed" readonly placeholder="Total otomatis" id="c12t"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" onclick="closeModal()">Batal</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">💾 Simpan Produk</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-bg" id="confirmBox">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Hapus Produk?</div>
+    <div class="confirm-text" id="confirmText">Produk ini akan dihapus permanen.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" onclick="closeConfirm()">Batal</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── AUTH ─────────────────────────────────────────────────────
+const CRED = { user:'admin', pass:'admin123' };
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (u === CRED.user && p === CRED.pass) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderStats(); renderTable();
+  } else {
+    document.getElementById('loginErr').textContent = '⚠️ Username atau password salah!';
+  }
+}
+function doLogout() { location.reload(); }
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ─── DATA ─────────────────────────────────────────────────────
+const DEFAULT = [
+  { id:1, name:'Smartphone Flagship Pro', price:8500000, category:'handphone', image:'📱', rating:4.9, reviews:567, cicilan:[{bulan:3,cicilan:2850000},{bulan:6,cicilan:1480000},{bulan:12,cicilan:830000}] },
+  { id:2, name:'Smartphone Mid Range', price:4500000, category:'handphone', image:'📱', rating:4.6, reviews:312, cicilan:[{bulan:3,cicilan:1500000},{bulan:6,cicilan:780000},{bulan:12,cicilan:440000}] },
+  { id:3, name:'Smartphone Budget Terjangkau', price:2200000, category:'handphone', image:'📱', rating:4.4, reviews:198, cicilan:[{bulan:3,cicilan:740000},{bulan:6,cicilan:380000},{bulan:12,cicilan:210000}] },
+  { id:4, name:'Laptop Gaming RTX 4090', price:25000000, category:'laptop', image:'💻', rating:4.9, reviews:423, cicilan:[{bulan:3,cicilan:8350000},{bulan:6,cicilan:4350000},{bulan:12,cicilan:2450000}] },
+  { id:5, name:'Laptop Ultrabook Premium', price:15000000, category:'laptop', image:'💻', rating:4.8, reviews:289, cicilan:[{bulan:3,cicilan:5050000},{bulan:6,cicilan:2600000},{bulan:12,cicilan:1450000}] },
+  { id:6, name:'Laptop Kerja Efisien', price:8000000, category:'laptop', image:'💻', rating:4.5, reviews:156, cicilan:[{bulan:3,cicilan:2670000},{bulan:6,cicilan:1400000},{bulan:12,cicilan:780000}] },
+  { id:7, name:'Headphone Wireless Premium', price:2200000, category:'elektronik', image:'🎧', rating:4.9, reviews:412, cicilan:[{bulan:3,cicilan:740000},{bulan:6,cicilan:380000},{bulan:12,cicilan:210000}] },
+  { id:8, name:'Monitor 4K Ultra', price:5500000, category:'elektronik', image:'🖼️', rating:4.7, reviews:298, cicilan:[{bulan:3,cicilan:1850000},{bulan:6,cicilan:960000},{bulan:12,cicilan:540000}] },
+  { id:9, name:'Keyboard Mechanical RGB', price:1800000, category:'elektronik', image:'⌨️', rating:4.8, reviews:521, cicilan:[{bulan:3,cicilan:600000},{bulan:6,cicilan:310000},{bulan:12,cicilan:175000}] },
+  { id:10, name:'Mouse Gaming Pro', price:900000, category:'elektronik', image:'🖱️', rating:4.6, reviews:234, cicilan:[{bulan:3,cicilan:300000},{bulan:6,cicilan:155000},{bulan:12,cicilan:85000}] },
+  { id:11, name:'Kamera DSLR Professional', price:18000000, category:'kamera', image:'📷', rating:4.9, reviews:345, cicilan:[{bulan:3,cicilan:6050000},{bulan:6,cicilan:3150000},{bulan:12,cicilan:1760000}] },
+  { id:12, name:'Mirrorless Kompak', price:12000000, category:'kamera', image:'📷', rating:4.8, reviews:267, cicilan:[{bulan:3,cicilan:4050000},{bulan:6,cicilan:2100000},{bulan:12,cicilan:1170000}] },
+  { id:13, name:'Action Camera 4K', price:3500000, category:'kamera', image:'📷', rating:4.7, reviews:189, cicilan:[{bulan:3,cicilan:1170000},{bulan:6,cicilan:610000},{bulan:12,cicilan:340000}] },
+  { id:14, name:'Kursi Gaming Ergonomis', price:3500000, category:'furniture', image:'🪑', rating:4.5, reviews:189, cicilan:[{bulan:3,cicilan:1170000},{bulan:6,cicilan:610000},{bulan:12,cicilan:340000}] },
+  { id:15, name:'Meja Kerja Minimalis', price:2800000, category:'furniture', image:'🖥️', rating:4.6, reviews:156, cicilan:[{bulan:3,cicilan:940000},{bulan:6,cicilan:490000},{bulan:12,cicilan:275000}] },
+  { id:16, name:'Lampu LED Smart', price:1200000, category:'furniture', image:'💡', rating:4.4, reviews:234, cicilan:[{bulan:3,cicilan:400000},{bulan:6,cicilan:210000},{bulan:12,cicilan:120000}] },
+  { id:17, name:'Rak Display Modern', price:1600000, category:'furniture', image:'📚', rating:4.5, reviews:123, cicilan:[{bulan:3,cicilan:540000},{bulan:6,cicilan:280000},{bulan:12,cicilan:160000}] },
+];
+
+function getProducts() {
+  try { const d = localStorage.getItem('katalog_products'); return d ? JSON.parse(d) : DEFAULT; }
+  catch { return DEFAULT; }
+}
+function saveProducts(arr) { localStorage.setItem('katalog_products', JSON.stringify(arr)); }
+
+const fmt = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n);
+const isUrl = s => s && (s.startsWith('http')||s.startsWith('//'));
+
+// ─── STATS ────────────────────────────────────────────────────
+function renderStats() {
+  const p = getProducts();
+  const cats = [...new Set(p.map(x=>x.category))].length;
+  const avgRating = (p.reduce((a,b)=>a+b.rating,0)/p.length).toFixed(1);
+  const totalReviews = p.reduce((a,b)=>a+b.reviews,0);
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Total Produk</div><div class="stat-val cyan">${p.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Kategori</div><div class="stat-val pink">${cats}</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Rating</div><div class="stat-val yellow">⭐ ${avgRating}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Ulasan</div><div class="stat-val green">${totalReviews.toLocaleString('id-ID')}</div></div>
+  `;
+}
+
+// ─── TABLE ────────────────────────────────────────────────────
+function renderTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('catFilter').value;
+  let data = getProducts();
+  if (cat !== 'all') data = data.filter(p => p.category === cat);
+  if (q) data = data.filter(p => p.name.toLowerCase().includes(q));
+
+  const tbody = document.getElementById('tableBody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">😔 Tidak ada produk ditemukan</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map((p,i) => `
+    <tr style="animation-delay:${i*0.04}s">
+      <td class="prod-img">${isUrl(p.image) ? `<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextSibling.style.display='inline'"/><span style="display:none;font-size:2rem">📦</span>` : `<span style="font-size:2rem">${p.image||'📦'}</span>`}</td>
+      <td><div class="prod-name">${p.name}</div><div style="font-size:0.75rem;color:var(--muted);margin-top:2px">ID: ${p.id}</div></td>
+      <td class="prod-price">${fmt(p.price)}</td>
+      <td><span class="cat-badge cat-${p.category}">${p.category}</span></td>
+      <td style="color:#facc15">★ ${p.rating} <span style="color:var(--muted);font-size:0.75rem">(${p.reviews})</span></td>
+      <td>
+        <div class="actions">
+          <button class="act-btn act-edit" onclick="openModal(${p.id})">✏️ Edit</button>
+          <button class="act-btn act-del" onclick="confirmDelete(${p.id},'${p.name.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ─── MODAL ────────────────────────────────────────────────────
+function openModal(id=null) {
+  document.getElementById('prodForm').reset();
+  document.getElementById('editId').value = '';
+  document.getElementById('imgPreviewEmoji').textContent = '';
+  document.getElementById('imgPreviewUrl').classList.remove('show');
+  ['c3t','c6t','c12t'].forEach(x => document.getElementById(x).value='');
+
+  if (id) {
+    const p = getProducts().find(x=>x.id===id);
+    if (!p) return;
+    document.getElementById('modalTitle').textContent = '✏️ Edit Produk';
+    document.getElementById('editId').value = p.id;
+    document.getElementById('fName').value = p.name;
+    document.getElementById('fPrice').value = p.price;
+    document.getElementById('fCategory').value = p.category;
+    document.getElementById('fRating').value = p.rating;
+    document.getElementById('fReviews').value = p.reviews;
+    document.getElementById('fImage').value = p.image||'';
+    p.cicilan.forEach(c => {
+      document.getElementById('c'+c.bulan).value = c.cicilan;
+      document.getElementById('c'+c.bulan+'t').value = fmt(c.cicilan * c.bulan);
+    });
+    previewImg();
+  } else {
+    document.getElementById('modalTitle').textContent = '＋ Tambah Produk';
+  }
+  document.getElementById('formModal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('formModal').classList.remove('open'); }
+
+function previewImg() {
+  const val = document.getElementById('fImage').value.trim();
+  const emojiEl = document.getElementById('imgPreviewEmoji');
+  const urlEl = document.getElementById('imgPreviewUrl');
+  if (isUrl(val)) {
+    urlEl.src = val; urlEl.classList.add('show');
+    emojiEl.textContent = '';
+  } else {
+    emojiEl.textContent = val;
+    urlEl.classList.remove('show');
+  }
+}
+
+// Auto-calc total cicilan
+['c3','c6','c12'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    const bulan = parseInt(id.replace('c',''));
+    const val = parseInt(document.getElementById(id).value)||0;
+    document.getElementById(id+'t').value = val ? fmt(val*bulan) : '';
+  });
+});
+
+// ─── SAVE ─────────────────────────────────────────────────────
+function saveProduct(e) {
+  e.preventDefault();
+  const editId = document.getElementById('editId').value;
+  const products = getProducts();
+
+  const makeCicilan = () => {
+    const arr = [];
+    ['3','6','12'].forEach(b => {
+      const v = parseInt(document.getElementById('c'+b).value)||0;
+      if (v) arr.push({ bulan:parseInt(b), cicilan:v });
+    });
+    return arr;
+  };
+
+  if (editId) {
+    const idx = products.findIndex(p=>p.id===parseInt(editId));
+    if (idx>-1) {
+      products[idx] = {
+        ...products[idx],
+        name: document.getElementById('fName').value.trim(),
+        price: parseInt(document.getElementById('fPrice').value),
+        category: document.getElementById('fCategory').value,
+        rating: parseFloat(document.getElementById('fRating').value),
+        reviews: parseInt(document.getElementById('fReviews').value),
+        image: document.getElementById('fImage').value.trim()||'📦',
+        cicilan: makeCicilan(),
+      };
+    }
+    showToast('✅ Produk berhasil diupdate!', 'success');
+  } else {
+    const newId = products.length ? Math.max(...products.map(p=>p.id))+1 : 1;
+    products.push({
+      id: newId,
+      name: document.getElementById('fName').value.trim(),
+      price: parseInt(document.getElementById('fPrice').value),
+      category: document.getElementById('fCategory').value,
+      rating: parseFloat(document.getElementById('fRating').value),
+      reviews: parseInt(document.getElementById('fReviews').value),
+      image: document.getElementById('fImage').value.trim()||'📦',
+      cicilan: makeCicilan(),
+    });
+    showToast('✅ Produk baru berhasil ditambahkan!', 'success');
+  }
+
+  saveProducts(products);
+  closeModal();
+  renderStats();
+  renderTable();
+}
+
+// ─── DELETE ───────────────────────────────────────────────────
+let pendingDeleteId = null;
+function confirmDelete(id, name) {
+  pendingDeleteId = id;
+  document.getElementById('confirmText').textContent = `"${name}" akan dihapus permanen.`;
+  document.getElementById('confirmBox').classList.add('open');
+}
+function closeConfirm() { document.getElementById('confirmBox').classList.remove('open'); pendingDeleteId=null; }
+document.getElementById('confirmOkBtn').addEventListener('click', () => {
+  if (!pendingDeleteId) return;
+  const filtered = getProducts().filter(p=>p.id!==pendingDeleteId);
+  saveProducts(filtered);
+  closeConfirm();
+  renderStats();
+  renderTable();
+  showToast('🗑️ Produk dihapus', 'error');
+});
+
+// ─── EXPORT / IMPORT ─────────────────────────────────────────
+function exportData() {
+  const data = JSON.stringify(getProducts(), null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `katalog-produk-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast('⬇️ Data berhasil diexport!', 'success');
+}
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error();
+      saveProducts(data);
+      renderStats(); renderTable();
+      showToast(`✅ ${data.length} produk berhasil diimport!`, 'success');
+    } catch { showToast('❌ File JSON tidak valid!', 'error'); }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ─── TOAST ────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ─── CLOSE ON BACKDROP ────────────────────────────────────────
+document.getElementById('formModal').addEventListener('click', e => { if(e.target===document.getElementById('formModal')) closeModal(); });
+document.getElementById('confirmBox').addEventListener('click', e => { if(e.target===document.getElementById('confirmBox')) closeConfirm(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal(); closeConfirm(); } });
+</script>
+</body>
+</html>
