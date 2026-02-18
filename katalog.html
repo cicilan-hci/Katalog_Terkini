@@ -477,7 +477,6 @@
         <div class="card-media">${mediaEl(p.image,'card')}</div>
         <div>
           <div class="card-name">${p.name}</div>
-          <div class="card-rating"><span>★</span> ${p.rating} (${p.reviews} ulasan)</div>
           <div class="card-price">${fmt(p.price)}</div>
           ${p.cicilan&&p.cicilan.length ? `<div class="card-cicilan">Cicilan mulai ${fmt(p.cicilan[0].cicilan)}/bln</div>` : ''}
         </div>
@@ -513,10 +512,6 @@
     document.getElementById('modalBody').innerHTML = `
       <div class="modal-img-wrap">${mediaEl(p.image,'modal')}</div>
       <div class="modal-title">${p.name}</div>
-      <div style="display:flex;align-items:center;margin-bottom:4px">
-        <span class="modal-stars">${stars(p.rating)}</span>
-        <span class="modal-rating-text">${p.rating} · ${p.reviews} ulasan</span>
-      </div>
       <div class="modal-price-box">
         <div class="modal-price-label">Harga Tunai</div>
         <div class="modal-price-value">${fmt(p.price)}</div>

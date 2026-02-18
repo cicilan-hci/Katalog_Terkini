@@ -295,7 +295,6 @@
             <th>Nama</th>
             <th>Harga</th>
             <th>Kategori</th>
-            <th>Rating</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -334,14 +333,6 @@
               <option value="kamera">📷 Kamera</option>
               <option value="furniture">🪑 Furniture</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label>Rating (1–5)</label>
-            <input class="form-control" id="fRating" type="number" step="0.1" min="1" max="5" placeholder="4.8" required/>
-          </div>
-          <div class="form-group">
-            <label>Jumlah Ulasan</label>
-            <input class="form-control" id="fReviews" type="number" placeholder="250" required/>
           </div>
           <div class="form-group form-full">
             <label>Gambar</label>
@@ -449,13 +440,9 @@ const isUrl = s => s && (s.startsWith('http')||s.startsWith('//'));
 function renderStats() {
   const p = getProducts();
   const cats = [...new Set(p.map(x=>x.category))].length;
-  const avgRating = (p.reduce((a,b)=>a+b.rating,0)/p.length).toFixed(1);
-  const totalReviews = p.reduce((a,b)=>a+b.reviews,0);
   document.getElementById('stats').innerHTML = `
     <div class="stat-card"><div class="stat-label">Total Produk</div><div class="stat-val cyan">${p.length}</div></div>
     <div class="stat-card"><div class="stat-label">Kategori</div><div class="stat-val pink">${cats}</div></div>
-    <div class="stat-card"><div class="stat-label">Avg Rating</div><div class="stat-val yellow">⭐ ${avgRating}</div></div>
-    <div class="stat-card"><div class="stat-label">Total Ulasan</div><div class="stat-val green">${totalReviews.toLocaleString('id-ID')}</div></div>
   `;
 }
 
@@ -478,7 +465,6 @@ function renderTable() {
       <td><div class="prod-name">${p.name}</div><div style="font-size:0.75rem;color:var(--muted);margin-top:2px">ID: ${p.id}</div></td>
       <td class="prod-price">${fmt(p.price)}</td>
       <td><span class="cat-badge cat-${p.category}">${p.category}</span></td>
-      <td style="color:#facc15">★ ${p.rating} <span style="color:var(--muted);font-size:0.75rem">(${p.reviews})</span></td>
       <td>
         <div class="actions">
           <button class="act-btn act-edit" onclick="openModal(${p.id})">✏️ Edit</button>
@@ -505,8 +491,6 @@ function openModal(id=null) {
     document.getElementById('fName').value = p.name;
     document.getElementById('fPrice').value = p.price;
     document.getElementById('fCategory').value = p.category;
-    document.getElementById('fRating').value = p.rating;
-    document.getElementById('fReviews').value = p.reviews;
     document.getElementById('fImage').value = p.image||'';
     p.cicilan.forEach(c => {
       document.getElementById('c'+c.bulan).value = c.cicilan;
@@ -566,8 +550,6 @@ function saveProduct(e) {
         name: document.getElementById('fName').value.trim(),
         price: parseInt(document.getElementById('fPrice').value),
         category: document.getElementById('fCategory').value,
-        rating: parseFloat(document.getElementById('fRating').value),
-        reviews: parseInt(document.getElementById('fReviews').value),
         image: document.getElementById('fImage').value.trim()||'📦',
         cicilan: makeCicilan(),
       };
@@ -580,8 +562,6 @@ function saveProduct(e) {
       name: document.getElementById('fName').value.trim(),
       price: parseInt(document.getElementById('fPrice').value),
       category: document.getElementById('fCategory').value,
-      rating: parseFloat(document.getElementById('fRating').value),
-      reviews: parseInt(document.getElementById('fReviews').value),
       image: document.getElementById('fImage').value.trim()||'📦',
       cicilan: makeCicilan(),
     });
